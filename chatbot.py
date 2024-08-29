@@ -2,12 +2,32 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import ChatMessage
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import load_prompt
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.schema.runnable import RunnablePassthrough
 import streamlit as st
 import os
-# import openai
+
+
+def load_memory(input):
+    return memory.load_memory_variables({})["chat_history"]
+
+# 체인 생성 함수
+def create_chain(prompt, model):
+    chain = RunnablePassthrough.assign(chat_history=load_memory) | prompt | model | StrOutputParser()
+    return chain
+
+# 채팅 함수
+def generate_response(user_input):
+    # AI 응답 생성 (스트리밍 없음)
+    response = chain.invoke({"question": user_input})
+    memory.save_context(
+        {"input": user_input},
+        {"output": response},
+    )
+
+    # print("자녀(20세 여성) :", response)
+    return response
+
 
 st.set_page_config(
     page_title="챗봇",
@@ -15,26 +35,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-
-with st.sidebar:
-    st.markdown('''
-**API KEY 발급 방법**
-1. https://beta.openai.com/ 회원가입
-2. https://beta.openai.com/account/api-keys 접속
-3. `create new secret key` 클릭 후 생성된 KEY 복사
-    ''')
-    value=''
-    apikey = st.text_input(label='OPENAI API 키', placeholder='OPENAI API키를 입력해 주세요', value=value)
-   
-    button = st.button('확인')
-
-    if button:
-        if apikey != "" : 
-            st.markdown(f'OPENAI API KEY: `{apikey}`')
-            os.environ["OPENAI_API_KEY"] = apikey
-        else : 
-            st.markdown('OPENAI API KEY를 입력해주세요')    
 
 # 타이틀 적용 예시
 st.title('❤ 자녀와 대화하는 부모 챗봇 ❤')
@@ -47,6 +47,28 @@ with col2 :
     gender = st.selectbox('자녀의 성별을 선택해주세요',('딸', '아들'))
 with col3 : 
     parents = st.selectbox('부모(나)를 선택해주세요',("엄마","아빠"))
+
+
+with st.sidebar:
+    st.markdown('''
+**진행 방법**
+1. 왼쪽 탭 내 Chat GPT API key 삽입
+2. 확인 버튼 클릭
+3. 오른쪽 상단 대화 기본 설정 삽입
+4. 자녀와 대화하듯이 대화 진행
+    ''')
+    value=''
+    apikey = st.text_input(label='ChatGPT API KEY', placeholder='ChatGPT API키를 입력해 주세요', value=value)
+        
+    button = st.button('확인')
+
+    if button :
+        if apikey != "" : 
+            st.markdown(f'OPENAI API KEY: `{apikey}`')
+            os.environ["OPENAI_API_KEY"] = apikey
+
+        else : 
+            st.markdown('OPENAI API KEY를 입력해주세요') 
 
 
 # 기본 프롬프트 설정
@@ -87,31 +109,13 @@ memory = ConversationSummaryBufferMemory(
     memory_key="chat_history"
 )
 
-def load_memory(input):
-    return memory.load_memory_variables({})["chat_history"]
-
-# 체인 생성 함수
-def create_chain(prompt, model):
-    chain = RunnablePassthrough.assign(chat_history=load_memory) | prompt | model | StrOutputParser()
-    return chain
-
 chain = create_chain(prompt, model)
-
 
 st.text("-------------------------------------------------------------------------------"*3)
 st.info(f'{age}세 {gender}과 대화를 나누는 챗봇입니다 {parents} 입장에서 대화를 시작해보세요')
 
-# 채팅 함수
-def generate_response(user_input):
-    # AI 응답 생성 (스트리밍 없음)
-    response = chain.invoke({"question": user_input})
-    memory.save_context(
-        {"input": user_input},
-        {"output": response},
-    )
-    # print("자녀(20세 여성) :", response)
-    return response
-   
+
+            
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "user", "content": "자녀와의 대화를 시작해보세요"}]
@@ -125,3 +129,4 @@ if prompt := st.chat_input():
     msg =  generate_response(prompt)
     st.session_state.messages.append({"role": "ai", "content": msg})
     st.chat_message("ai").write(msg)
+
