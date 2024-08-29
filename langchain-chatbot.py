@@ -16,6 +16,26 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
+with st.sidebar:
+    st.markdown('''
+**API KEY 발급 방법**
+1. https://beta.openai.com/ 회원가입
+2. https://beta.openai.com/account/api-keys 접속
+3. `create new secret key` 클릭 후 생성된 KEY 복사
+    ''')
+    value=''
+    apikey = st.text_input(label='OPENAI API 키', placeholder='OPENAI API키를 입력해 주세요', value=value)
+   
+    button = st.button('확인')
+
+    if button:
+        if apikey != "" : 
+            st.markdown(f'OPENAI API KEY: `{apikey}`')
+            os.environ["OPENAI_API_KEY"] = apikey
+        else : 
+            st.markdown('OPENAI API KEY를 입력해주세요')    
+
 # 타이틀 적용 예시
 st.title('❤ 자녀와 대화하는 부모 챗봇 ❤')
 st.subheader('대화하고 싶은 자녀와 내가 누가되고 싶은지를 선택해주세요')
