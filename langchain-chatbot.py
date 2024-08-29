@@ -16,8 +16,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-os.environ["OPENAI_API_KEY"] = 'sk-proj-Sj7agAlMaMc1xoO9noIlT3BlbkFJ2U2gMa5YtDThnei49cb4'
-
 # 타이틀 적용 예시
 st.title('❤ 자녀와 대화하는 부모 챗봇 ❤')
 st.subheader('대화하고 싶은 자녀와 내가 누가되고 싶은지를 선택해주세요')
