@@ -1,6 +1,6 @@
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import ChatMessage
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.schema.runnable import RunnablePassthrough
@@ -97,7 +97,10 @@ AI : 어 ~
 prompt_template = prompt.format(parents=parents, age=age, gender=gender, concept='일상 대화') # Use .format() to insert values
 
 # 프롬프트 템플릿 생성
-prompt = PromptTemplate.from_template(prompt_template  + "\n\n#Question:\n{question}\n\n#Answer:")
+prompt = ChatPromptTemplate.from_messages([
+    ("system", prompt_template + "{question}"), 
+    ("user", "{chat_history}") 
+])
 
 # 챗봇 생성
 model = ChatOpenAI(model_name= "gpt-4o", temperature=0.7)
@@ -129,4 +132,3 @@ if prompt := st.chat_input():
     msg =  generate_response(prompt)
     st.session_state.messages.append({"role": "ai", "content": msg})
     st.chat_message("ai").write(msg)
-
