@@ -103,7 +103,7 @@ model = ChatOpenAI(model_name= "gpt-4o",
 memory = ConversationSummaryBufferMemory(
     return_messages=True,
     llm=model,
-    max_token_limit=300,
+    max_token_limit=1000,
     memory_key="chat_history"
 )
 
