@@ -88,19 +88,28 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 # 챗봇 생성
-model = ChatOpenAI(model_name= "gpt-4", temperature=0.7)
+model = ChatOpenAI(model_name= "gpt-4o", 
+                   temperature=0.4, # 범위 : 0 ~ 1 / 0에 가까울수록, 일관된 응답을 제공 ~ 1에 가까울수록 창의성의 응답을 제시함
+                   max_tokens=300 #최대 output token 개수
+#                    top_p=1, # 범위 : 0 ~ 1 / 0에 가까울수록 정확도 높은 답 ~ 1에 가까울수록 다양한 출력값 유도
+#   frequency_penalty=0,
+#   presence_penalty=0,
+#   response_format={
+#     "type": "text"
+
+) 
 
 # 메모리 설정 셋팅
 memory = ConversationSummaryBufferMemory(
     return_messages=True,
-    llm=model,
-    max_token_limit=80,
+    max_token_limit=300,
     memory_key="chat_history"
 )
 
 # 메모리 저장 함수(chat_history에 대화를 저장 함)
 def load_memory(input):
     return memory.load_memory_variables({})["chat_history"]
+
 
 
 # 체인 함수 생성(메모리 함수 | 프롬프트 | 모델 | 파싱)
