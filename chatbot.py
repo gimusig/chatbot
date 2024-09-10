@@ -88,7 +88,7 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 # 챗봇 생성
-model = ChatOpenAI(model_name= "gpt-4", temperature=0.4)
+model = ChatOpenAI(model_name= "gpt-4", temperature=0.7)
 
 # 메모리 설정 셋팅
 memory = ConversationSummaryBufferMemory(
