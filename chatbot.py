@@ -102,6 +102,7 @@ model = ChatOpenAI(model_name= "gpt-4o",
 # 메모리 설정 셋팅
 memory = ConversationSummaryBufferMemory(
     return_messages=True,
+    llm=model,
     max_token_limit=300,
     memory_key="chat_history"
 )
